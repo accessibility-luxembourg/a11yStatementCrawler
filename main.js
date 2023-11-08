@@ -10,6 +10,7 @@ const toCSV = process.argv[3] == '--csv';
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(site);
+  await page.waitForNetworkIdle();
   let urls = await page.evaluate(() => {
     const keyword = {
         'fr': 'accessibilité', 
@@ -19,7 +20,7 @@ const toCSV = process.argv[3] == '--csv';
         'lu': 'accessibilitéit'
     }    
     let lang = document.querySelector('html').getAttribute('lang');
-    if (lang === null) {
+    if (lang === null || lang == "") {
         lang = 'fr'
     }
     lang = lang.substring(0,2)
