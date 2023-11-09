@@ -41,6 +41,9 @@ const toCSV = process.argv[3] == '--csv';
   // remove duplicates
   urls = [...new Set(urls)]
 
+  // remove javascript: urls
+  urls = urls.filter(e => {return e.match(/^javascript:/) === null})
+
   const payloads = {}
   for (let i=0; i< urls.length; i++) {
     await page.goto(urls[i])
