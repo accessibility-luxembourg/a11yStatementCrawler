@@ -3,14 +3,20 @@
 
 const puppeteer = require('puppeteer');
 
-const site = process.argv[2];
+let site = process.argv[2].trim();
+if (!site.includes('http')) {
+  site = 'http://'+site
+}
+
 const toCSV = process.argv[3] == '--csv';
 
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(site);
+  try {
   await page.waitForNetworkIdle();
+  } catch (e) {}
   let urls = await page.evaluate(() => {
     const keyword = {
         'fr': 'accessibilité', 
@@ -49,7 +55,6 @@ const toCSV = process.argv[3] == '--csv';
         const disproportionateBurden = Array.from(document.querySelectorAll('.technical-information.disproportionate-burden')).map(e => {return e.innerText})
         const exception = Array.from(document.querySelectorAll('.technical-information.exception')).map(e => {return e.innerText})
         const result = (orga === '' || website === '')?{}:{'organization': orga, 'conformance': conformance, 'urls': website, 'creationDate': creationDate, 'renewalDate': renewalDate, 'email': email, 'limitations': {'nonCompliant': nonCompliant, 'disproportionateBurden': disproportionateBurden, 'exception': exception}}
-        console.log(result);
         return result;
     })
     if (payload !== {}) {
